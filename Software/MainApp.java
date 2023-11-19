@@ -37,8 +37,17 @@ public class MainApp {
         String name = in.nextLine();
 
         if (binaryTree.search(name)){
-                System.out.println("application exists! Adding 1 qty anyways");
-                binaryTree.addExistingSoftware(name, 1);
+                System.out.println("application exists! Which version?");
+                String ver = in.nextLine();
+                if (binaryTree.searchVer(name, ver)) {
+                    binaryTree.addExistingSoftware(name, ver, 1);
+                    System.out.println("Successfully added!");
+                } else if (!binaryTree.searchVer(name, ver)) {
+                    System.out.println("application does not exists in the entry! please enter the needed details:");
+                    System.out.println("price:");
+                    int price = Integer.parseInt(in.nextLine());
+                    binaryTree.insert(new Software(name, ver, 1, price));
+                }
         } else if (!binaryTree.search(name)) {
             System.out.println("application does not exists in the entry! please enter the needed details:");
             System.out.println("version:");
@@ -62,18 +71,24 @@ public class MainApp {
         String name = in.nextLine();
 
         if (binaryTree.search(name)){
-                System.out.println("application exists! Confirm Purchase");
-                System.out.println("enter quantity:");
-                int qty = Integer.parseInt(in.nextLine());
-                System.out.printf("%-30s%-10s%-10s%-10s\n", "Software name", "Version", "Price", "Quantity");
-                binaryTree.selected(name, qty);
-                System.out.println("Confirm? y or n");
-                String confirm = in.nextLine();
-                if (confirm.equalsIgnoreCase("y")) {
-                    binaryTree.buyExistingSoftware(name, qty);
-                    System.out.println("successfully purchased!");
+                System.out.println("application exists! Which version?");
+                String ver = in.nextLine();
+
+                if (binaryTree.searchVer(name, ver)) {
+                    System.out.println("enter quantity:");
+                    int qty = Integer.parseInt(in.nextLine());
+                    System.out.printf("%-30s%-10s%-10s%-10s\n", "Software name", "Version", "Price", "Quantity");
+                    binaryTree.selected(name, ver, qty);
+                    System.out.println("Confirm? y or n");
+                    String confirm = in.nextLine();
+                    if (confirm.equalsIgnoreCase("y")) {
+                        binaryTree.buyExistingSoftware(name, ver, qty);
+                        System.out.println("successfully purchased!");
+                    }
                 }
-                else {}
+                else {
+                    System.out.println("Version not found!");
+                }
         } else if (!binaryTree.search(name)) {
             System.out.println("sorry the software is already sold out!");
         }
@@ -84,9 +99,22 @@ public class MainApp {
         String name = in.nextLine();
 
         if (binaryTree.search(name)){
-            System.out.println("application exists! How much would you sell?");
-            int q = Integer.parseInt(in.nextLine());
-            binaryTree.addExistingSoftware(name, q);
+            System.out.println("application exists! Which version?");
+            String ver = in.nextLine();
+
+            if (binaryTree.searchVer(name, ver)) {
+                System.out.println("How much?");
+                int q = Integer.parseInt(in.nextLine());
+                binaryTree.addExistingSoftware(name, ver, q);
+                System.out.println("Successfully added!");
+            }
+            else
+                System.out.println("Version not found! please enter the needed details:");
+                System.out.println("price:");
+                int price = Integer.parseInt(in.nextLine());
+                System.out.println("quantity: ");
+                int q = Integer.parseInt(in.nextLine());
+                binaryTree.insert(new Software(name, ver, q, price));
         } else if (!binaryTree.search(name)) {
             System.out.println("application does not exists in the entry! please enter the needed details:");
             System.out.println("version:");
@@ -126,11 +154,13 @@ public class MainApp {
             else
                 System.out.println("invalid input");
         }
+
         File file = new File("software.txt");
         FileWriter fw = new FileWriter(file);
         PrintWriter pw = new PrintWriter(fw);
         binaryTree.inorderPrint(pw);
         pw.close();
+        
         in.close();
     }
 }
