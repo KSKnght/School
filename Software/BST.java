@@ -24,15 +24,42 @@ public class BST {
         return false;
     }
 
-    public void selected(String s, int q){
-        selected(root, s, q);
-    }
-
-    public void selected(BSTNode p, String el, int q) { // Figure 6.9
+    public Boolean searchVer(String el, String ver) { // Figure 6.9
+        BSTNode p = root;
         while (p != null)
         if (el.compareToIgnoreCase(p.key.getName()) == 0){
-            System.out.printf("%-30s%-10s%-10s%-10s\n", p.key.getName(),p.key.getVersion(),p.key.getPrice(),q);
-            break;
+            if (ver.compareToIgnoreCase(p.key.getVersion()) == 0)
+                return true;
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) < 0){
+                p = p.left;
+            }
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) > 0) {
+                p = p.right;
+        }
+        }
+        else if (el.compareToIgnoreCase(p.key.getName()) < 0){
+            p = p.left;
+        }
+        else if (el.compareToIgnoreCase(p.key.getName()) > 0) {
+            p = p.right;
+        }
+        return false;
+    }
+
+    public void selected(String el, String ver, int q) { // Figure 6.9
+        BSTNode p = root;
+        while (p != null)
+        if (el.compareToIgnoreCase(p.key.getName()) == 0){
+            if (ver.equalsIgnoreCase(p.key.getVersion())) {
+                System.out.printf("%-30s%-10s%-10s%-10s\n", p.key.getName(),p.key.getVersion(),p.key.getPrice(),q);
+                break;
+            }
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) < 0){
+                p = p.left;
+            }
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) > 0) {
+                p = p.right;
+            }
         }
         else if (el.compareToIgnoreCase(p.key.getName()) < 0){
             p = p.left;
@@ -42,37 +69,42 @@ public class BST {
         }
     }
 
-    public void addExistingSoftware(String s, int q){
-        setExisitngSoftware(root, s, q);
-    }
 
-    protected void setExisitngSoftware(BSTNode p, String el, int q) { // Figure 6.9
+    protected void addExistingSoftware(String elname, String ver, int q) { // Figure 6.9
+        BSTNode p = root;
         while (p != null)
-        if (el.compareToIgnoreCase(p.key.getName()) == 0){
-            int qty = p.key.getQty();
-            p.key.setQty(qty + q);
-            break;
+        if (elname.compareToIgnoreCase(p.key.getName()) == 0){
+            if (ver.equalsIgnoreCase(p.key.getVersion())) {
+                int qty = p.key.getQty();
+                p.key.setQty(qty + q);
+                break;
+            }
         }
-        else if (el.compareToIgnoreCase(p.key.getName()) < 0){
+        else if (elname.compareToIgnoreCase(p.key.getName()) < 0){
             p = p.left;
         }
-        else if (el.compareToIgnoreCase(p.key.getName()) > 0) {
+        else if (elname.compareToIgnoreCase(p.key.getName()) > 0) {
             p = p.right;
         }
     }
 
-    public void buyExistingSoftware(String s, int q){
-        buyExisitngSoftware(root, s, q);
-    }
-
-    protected void buyExisitngSoftware(BSTNode p, String el, int q) { // Figure 6.9
+    protected void buyExistingSoftware(String el, String ver, int q) { // Figure 6.9
+        BSTNode p = root;
         while (p != null)
         if (el.compareToIgnoreCase(p.key.getName()) == 0){
-            int qty = p.key.getQty();
-            p.key.setQty(qty - q);
-            if (p.key.getQty() == 0)
-                deleteByMerging(p.key);
-            break;
+            if (ver.equalsIgnoreCase(p.key.getVersion())){
+                int qty = p.key.getQty();
+                p.key.setQty(qty - q);
+                if (p.key.getQty() <= 0)
+                    deleteByMerging(p.key);
+                break;
+            }
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) < 0){
+                p = p.left;
+            }
+            else if (ver.compareToIgnoreCase(p.key.getVersion()) > 0) {
+                p = p.right;
+            }
         }
         else if (el.compareToIgnoreCase(p.key.getName()) < 0){
             p = p.left;
@@ -86,12 +118,24 @@ public class BST {
     BSTNode p = root, prev = null;
     while (p != null) { // find a place for inserting new node;
         prev = p;
-        if (p.key.getName().compareToIgnoreCase(el.getName()) < 0)
+        if (p.key.getName().compareToIgnoreCase(el.getName()) == 0) {
+            if (p.key.getVersion().compareToIgnoreCase(el.getVersion()) < 0)
+            p = p.right;
+            else if (p.key.getVersion().compareToIgnoreCase(el.getVersion()) > 0)
+            p = p.left;
+        }
+        else if (p.key.getName().compareToIgnoreCase(el.getName()) < 0)
             p = p.right;
         else p = p.left;
     }
     if (root == null) // tree is empty;
         root = new BSTNode(el);
+    else if (prev.key.getName().compareToIgnoreCase(el.getName()) == 0){
+        if (prev.key.getVersion().compareToIgnoreCase(el.getVersion()) < 0)
+        prev.right = new BSTNode(el);
+        else if (prev.key.getVersion().compareToIgnoreCase(el.getVersion()) > 0)
+            prev.left = new BSTNode(el);
+    }
     else if (prev.key.getName().compareToIgnoreCase(el.getName()) < 0)
         prev.right = new BSTNode(el);
     else prev.left = new BSTNode(el);
@@ -128,7 +172,16 @@ public class BST {
         BSTNode tmp, node, p = root, prev = null;
         while (p != null && p.key != el) { // find the node p
             prev = p; // with element el;
-            if (p.key.getName().compareToIgnoreCase(el.getName()) < 0)
+            // if (p.key.getName().compareToIgnoreCase(el.getName()) < 0)
+            //     p = p.right;
+            // else p = p.left;
+            if (p.key.getName().compareToIgnoreCase(el.getName()) == 0) {
+            if (p.key.getVersion().compareToIgnoreCase(el.getVersion()) < 0)
+                p = p.right;
+            else if (p.key.getVersion().compareToIgnoreCase(el.getVersion()) > 0)
+                p = p.left;
+            }
+            else if (p.key.getName().compareToIgnoreCase(el.getName()) < 0)
                 p = p.right;
             else p = p.left;
         }
