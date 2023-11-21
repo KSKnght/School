@@ -4,9 +4,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //ArrayList<Character> graphNodes = new ArrayList<>();
-        //ArrayList<String> graphEdge = new ArrayList<>();
-
         File file = new File("graph.txt");
 
         if(file.createNewFile()) {}
